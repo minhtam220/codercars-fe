@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
-import apiService from "../app/apiService";
-import { DataGrid } from "@mui/x-data-grid";
-import { Container, Fab, IconButton, Pagination, Stack } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { Container, Fab, IconButton, Pagination, Stack } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import React, { useCallback, useEffect, useState } from "react";
+import apiService from "../app/apiService";
 import ConfirmModal from "../components/ConfirmModal";
 import FormModal from "../components/FormModal";
-import AddIcon from "@mui/icons-material/Add";
 
 const HomePage = () => {
   const [cars, setCars] = useState([]);
@@ -21,6 +21,7 @@ const HomePage = () => {
     setMode("create");
     setOpenForm(true);
   };
+
   const handleClickEdit = (id) => {
     setMode("edit");
     setSelectedCar(cars.find((car) => car._id === id));
@@ -31,14 +32,16 @@ const HomePage = () => {
     setOpenConfirm(true);
     setSelectedCar(cars.find((car) => car._id === id));
   };
+
   const handleDelete = async () => {
     try {
-      await apiService.delete(`/cars/${selectedCar._id}`);
+      await apiService.delete(`/car/${selectedCar._id}`);
       getData();
     } catch (err) {
       console.log(err);
     }
   };
+
   const name =
     selectedCar?.release_date +
     " " +
@@ -75,6 +78,25 @@ const HomePage = () => {
       ),
     },
   ];
+
+  const getData = useCallback(async () => {
+    const res = await apiService.get(`/car?page=${page}`);
+    console.log("running getData");
+    console.log(`/car?page=${page}`);
+    console.log(res.data);
+    setCars(res.data.data);
+    console.log("running setCars");
+    //console.log(cars);
+    setTotalPages(res.data.total);
+    //setTotalPages(10);
+    console.log("running setTotalPages");
+    console.log(page);
+  }, [page]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
+
   const rows = cars.map((car) => ({
     id: car._id,
     name: car.make + " " + car.model,
@@ -84,19 +106,6 @@ const HomePage = () => {
     price: car.price,
     release_date: car.release_date,
   }));
-
-  const getData =
-    useCallback(
-      async () => {
-    const res = await apiService.get(`/cars?page=${page}`);
-    setCars(res.data.cars);
-    setTotalPages(res.data.total);
-      }
-      , [page]);
-
-  useEffect(() => {
-    getData();
-  }, [getData]);
 
   return (
     <Container maxWidth="lg" sx={{ pb: 3 }}>
