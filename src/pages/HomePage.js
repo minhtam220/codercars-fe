@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import apiService from "../app/apiService";
 import ConfirmModal from "../components/ConfirmModal";
 import FormModal from "../components/FormModal";
+import SearchBox from "../components/SearchBox";
 
 const HomePage = () => {
   const [cars, setCars] = useState([]);
@@ -16,6 +17,7 @@ const HomePage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [mode, setMode] = useState("create");
+  const [searchParams, setSearchParams] = useState("");
 
   const handleClickNew = () => {
     setMode("create");
@@ -80,18 +82,12 @@ const HomePage = () => {
   ];
 
   const getData = useCallback(async () => {
-    const res = await apiService.get(`/car?page=${page}`);
-    console.log("running getData");
-    console.log(`/car?page=${page}`);
-    console.log(res.data);
+    const res = await apiService.get(
+      `/car?page=${page}&search=${searchParams}`
+    );
     setCars(res.data.data);
-    console.log("running setCars");
-    //console.log(cars);
     setTotalPages(res.data.total);
-    //setTotalPages(10);
-    console.log("running setTotalPages");
-    console.log(page);
-  }, [page]);
+  }, [page, searchParams]);
 
   useEffect(() => {
     getData();
@@ -130,6 +126,10 @@ const HomePage = () => {
           setSelectedCar(null);
         }}
         mode={mode}
+      />
+      <SearchBox
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
       />
       <div style={{ height: 630, width: "100%" }}>
         <DataGrid
