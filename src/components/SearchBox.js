@@ -64,7 +64,7 @@ export default function SearchBox({ searchParams, setSearchParams }) {
                 <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
-                placeholder="Search…"
+                placeholder="Search by name…"
                 inputProps={{ "aria-label": "search" }}
                 value={searchParams}
                 onChange={(event) => {
